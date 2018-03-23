@@ -1,12 +1,13 @@
 package handlers;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
@@ -23,53 +24,67 @@ public class QuestionHandler implements ICsvHandler<Question>
 		List<Question> questionsList = new LinkedList<Question>();
 		Question question;
 
-		try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream(file), 500 * 1024))
+		try (FileInputStream fileInputStream = new FileInputStream(file))
 		{
-			final int newLineCharacterCode = 10;
-			while (reader.read() != newLineCharacterCode)
-				continue;
-
+			// Inicializa o leitor e o array de bytes temporario
+			FileChannel ch = fileInputStream.getChannel();
+			byte[] byteArray = new byte[1024 * 1024];
+			ByteBuffer byteBuffer = ByteBuffer.wrap(byteArray);
+			int bytesReadQuantity;
+			
+			// Inicializa padroes de leitura do arquivo
+			int i = 0;
+			int newLineCharacterCode = 10;
 			String[] obj = new String[6];
-			String tempString = "";
+			StringBuilder tempString = new StringBuilder(byteArray.length);
 			int objPosition = 0;
 			int quotationMarksCount = 0;
 			long registriesCount = 0;
 			
-			int i = reader.read();
+			// Ignora o cabecalho
+			bytesReadQuantity = ch.read(byteBuffer);
+			for(i = 1; i < byteArray.length && byteArray[i-1] != newLineCharacterCode; ++i);
 
-			while (i != -1)
-			{
-				while ((objPosition < 6) && (i != -1))
+			do
+			{				
+				for (; i < bytesReadQuantity; i++)
 				{
-					char c = (char) i;
+					char c = (char)byteArray[i];
 
 					if (c != ',' && c != '\n')
 					{
-						if (c == '"') quotationMarksCount++;
-						tempString += c;
+						if (c == '"') 
+							quotationMarksCount++;
+						tempString.append(c);
 					}
 					else if (quotationMarksCount % 2 == 0)
 					{
-						obj[objPosition] = tempString;
-						tempString = "";
+						obj[objPosition] = tempString.toString();
+						tempString.setLength(0);
 						objPosition++;
 					}
+					
+					if(objPosition > 5)
+					{
+						question = new Question(obj);
+						questionsList.add(question);
+						registriesCount++;
 
-					i = reader.read();
+						if (registriesCount % 50000 == 0)
+							System.out.println("Registros lidos: " + registriesCount);
+						
+						objPosition = 0;
+						quotationMarksCount = 0;
+						obj = new String[obj.length];
+					}
 				}
-				
-				question = new Question(obj);
-				questionsList.add(question);
-				registriesCount++;
-				
-				if(registriesCount % 1000 == 0)
-					System.out.println("Registros lidos: " + registriesCount);
-
-				objPosition = 0;
-				quotationMarksCount = 0;
-				obj = new String[obj.length];
-			}
-
+				byteBuffer.clear();
+				i = 0;
+			} while ((bytesReadQuantity = ch.read(byteBuffer)) != -1);
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
 		}
 		catch (IOException e)
 		{

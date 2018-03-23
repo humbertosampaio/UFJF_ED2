@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import domain.Question;
 import domain.Tag;
@@ -17,10 +18,18 @@ public class Main
 
 	public static void main(String[] args)
 	{
+		final long startTime = System.nanoTime();
+		
 		writeQuestionsToCsvFile();
 //		writeTagsToCsvFile();
 //		bubbleSort();
 //		selectionSort();
+		
+		final long duration = System.nanoTime() - startTime;
+		long totalSegundos = TimeUnit.NANOSECONDS.toSeconds(duration);
+		int minutos = (int)(totalSegundos / 60);
+		long segundos = minutos == 0 ? totalSegundos : totalSegundos % minutos;
+		System.out.println("Tempo decorrido: " + minutos + "m " + segundos + "s");
 	}
 	
 	public static void writeQuestionsToCsvFile()
