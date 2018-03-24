@@ -1,7 +1,7 @@
 package main;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -11,21 +11,34 @@ import domain.Tag;
 import handlers.QuestionHandler;
 import handlers.TagHandler;
 import sorters.BubbleSort;
+import sorters.ISorter;
+import sorters.InsertionSort;
+import sorters.MergeSort;
 import sorters.SelectionSort;
 
 public class Main
 {
-
 	public static void main(String[] args)
 	{
 		final long startTime = System.nanoTime();
 		
-		writeQuestionsToCsvFile();
+//		writeQuestionsToCsvFile();
 //		writeTagsToCsvFile();
-//		bubbleSort();
-//		selectionSort();
 		
-		final long duration = System.nanoTime() - startTime;
+		int[] vector = getRandomIntegerVector(100);
+		System.out.println(Arrays.toString(vector));
+		bubbleSort(vector);
+		selectionSort(vector);
+		insertionSort(vector);
+		mergeSort(vector);
+		
+		final long finishTime= System.nanoTime();
+		printElapsedTime(startTime, finishTime);
+	}
+	
+	public static void printElapsedTime(long startNanoTime, long finishNanoTime)
+	{
+		final long duration = finishNanoTime - startNanoTime;
 		long totalSegundos = TimeUnit.NANOSECONDS.toSeconds(duration);
 		int minutos = (int)(totalSegundos / 60);
 		long segundos = minutos == 0 ? totalSegundos : totalSegundos % minutos;
@@ -38,6 +51,7 @@ public class Main
 		QuestionHandler questionHandler = new QuestionHandler();
 		List<Question> questionList = questionHandler.getEntries(questionFile);
 		File targetFile = new File("io_files/Questions_Output.csv");
+		System.out.println("Escrevendo dados no arquivo de saída " + targetFile.getName() + "...");
 		questionHandler.writeToCsvFile(questionList, targetFile);
 	}
 	
@@ -50,34 +64,64 @@ public class Main
 		tagHandler.writeToCsvFile(tagList, outputFile);
 	}
 	
-	public static List<Integer> getRandomIntegerList(int listSize)
+	public static int[] getRandomIntegerVector(int size)
 	{
 		Random randomizer = new Random();
-		List<Integer> list = new ArrayList<>(listSize);
+		int vector[] = new int[size];
 		
-		for(int i = 0; i < listSize; i++)
-			list.add(randomizer.nextInt(199) - 100);
+		for(int i = 0; i < size; i++)
+			vector[i] = randomizer.nextInt(199) - 100;
 		
-		return list;
+		return vector;
 	}
 	
-	public static void bubbleSort()
+	public static void copyVectorValues(int[] source, int[] target)
 	{
-		List<Integer> list = getRandomIntegerList(10);
-		System.out.println(list.toString());
+		if(source.length != target.length)
+		{
+			System.out.println("Impossível copiar valores. Os vetores têm tamanhos diferentes.");
+			return;
+		}
 		
+		for(int i = 0; i < source.length; i++)
+			target[i] = source[i];
+	}
+	
+	public static void sort(ISorter sorter, int[] vector)
+	{
+		sorter.sort(vector);
+		System.out.println(Arrays.toString(vector));
+	}
+	
+	public static void bubbleSort(int[] vector)
+	{
 		BubbleSort sorter = new BubbleSort();
-		list = sorter.sort(list);
-		System.out.println(list.toString());
+		int[] copyVector = new int[vector.length];
+		copyVectorValues(vector, copyVector);
+		Main.sort(sorter, vector);
 	}
 	
-	public static void selectionSort()
+	public static void selectionSort(int[] vector)
 	{
-		List<Integer> list = getRandomIntegerList(10);
-		System.out.println(list.toString());
-		
 		SelectionSort sorter = new SelectionSort();
-		list = sorter.sort(list);
-		System.out.println(list.toString());
+		int[] copyVector = new int[vector.length];
+		copyVectorValues(vector, copyVector);
+		Main.sort(sorter, vector);
+	}
+	
+	public static void insertionSort(int[] vector)
+	{
+		InsertionSort sorter = new InsertionSort();
+		int[] copyVector = new int[vector.length];
+		copyVectorValues(vector, copyVector);
+		Main.sort(sorter, vector);
+	}
+
+	public static void mergeSort(int[] vector)
+	{
+		MergeSort sorter = new MergeSort();
+		int[] copyVector = new int[vector.length];
+		copyVectorValues(vector, copyVector);
+		Main.sort(sorter, vector);
 	}
 }

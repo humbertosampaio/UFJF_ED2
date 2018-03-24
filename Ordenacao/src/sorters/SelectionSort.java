@@ -1,14 +1,12 @@
 package sorters;
 
-import java.util.List;
-
 public class SelectionSort implements ISorter
 {
 
 	@Override
-	public List<Integer> sort(List<Integer> list)
+	public int[] sort(int[] vector)
 	{
-		int size = list.size();
+		int size = vector.length;
 		Integer smallestElementIndex;
 		Integer temp;
 		for(int i = 0; i < size-1; i++)
@@ -16,15 +14,15 @@ public class SelectionSort implements ISorter
 			smallestElementIndex = i;
 			for(int j = i+1; j < size; j++)
 			{
-				if(list.get(j) < list.get(smallestElementIndex))
+				if(vector[j] < vector[smallestElementIndex])
 					smallestElementIndex = j;
 			}
-			temp = list.get(i);
-			list.set(i, list.get(smallestElementIndex));
-			list.set(smallestElementIndex, temp);
+			temp = vector[i];
+			vector[i] = vector[smallestElementIndex];
+			vector[smallestElementIndex] = temp;
 		}
 		
-		return list;
+		return vector;
 	}
 
 }
