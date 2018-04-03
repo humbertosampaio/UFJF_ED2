@@ -35,10 +35,10 @@ public class Question
 	{
 		this.id = Integer.parseInt(question[0]);
 		this.ownerUserId = question[1];
-		this.score = Integer.parseInt(question[3]);
-		this.title = question[4];
 		LocalDateTime ldt = LocalDateTime.parse(question[2].substring(0, 19));
 		this.creationDate = ldt;
+		this.score = Integer.parseInt(question[3]);
+		this.title = question[4];
 		this.questionHandler = new QuestionHandler();
 	}
 		

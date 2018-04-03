@@ -73,6 +73,7 @@ public class QuestionHandler implements ICsvHandler<Question>
 						if (registriesCount % 50000 == 0)
 							System.out.println("Registros lidos: " + registriesCount);
 						
+						// Reinicializa as variáveis de controle para ler o próximo objeto
 						objPosition = 0;
 						quotationMarksCount = 0;
 						obj = new String[obj.length];

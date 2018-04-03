@@ -14,6 +14,7 @@ import sorters.BubbleSort;
 import sorters.ISorter;
 import sorters.InsertionSort;
 import sorters.MergeSort;
+import sorters.QuickSort;
 import sorters.SelectionSort;
 
 public class Main
@@ -25,13 +26,14 @@ public class Main
 //		writeQuestionsToCsvFile();
 //		writeTagsToCsvFile();
 		
-		int[] vector = getRandomIntegerVector(100);
-		System.out.println(Arrays.toString(vector));
+		int[] vector = getRandomIntegerVector(10);
+		System.out.println("Original\n" + Arrays.toString(vector));
 		bubbleSort(vector);
 		selectionSort(vector);
 		insertionSort(vector);
 		mergeSort(vector);
-		
+		quickSort(vector);
+
 		final long finishTime= System.nanoTime();
 		printElapsedTime(startTime, finishTime);
 	}
@@ -70,7 +72,7 @@ public class Main
 		int vector[] = new int[size];
 		
 		for(int i = 0; i < size; i++)
-			vector[i] = randomizer.nextInt(199) - 100;
+			vector[i] = randomizer.nextInt((size * 2) - 1) - size;
 		
 		return vector;
 	}
@@ -90,7 +92,7 @@ public class Main
 	public static void sort(ISorter sorter, int[] vector)
 	{
 		sorter.sort(vector);
-		System.out.println(Arrays.toString(vector));
+		System.out.println(sorter.getClass().getSimpleName() + "\n" + Arrays.toString(vector));
 	}
 	
 	public static void bubbleSort(int[] vector)
@@ -98,7 +100,7 @@ public class Main
 		BubbleSort sorter = new BubbleSort();
 		int[] copyVector = new int[vector.length];
 		copyVectorValues(vector, copyVector);
-		Main.sort(sorter, vector);
+		Main.sort(sorter, copyVector);
 	}
 	
 	public static void selectionSort(int[] vector)
@@ -106,7 +108,7 @@ public class Main
 		SelectionSort sorter = new SelectionSort();
 		int[] copyVector = new int[vector.length];
 		copyVectorValues(vector, copyVector);
-		Main.sort(sorter, vector);
+		Main.sort(sorter, copyVector);
 	}
 	
 	public static void insertionSort(int[] vector)
@@ -114,7 +116,7 @@ public class Main
 		InsertionSort sorter = new InsertionSort();
 		int[] copyVector = new int[vector.length];
 		copyVectorValues(vector, copyVector);
-		Main.sort(sorter, vector);
+		Main.sort(sorter, copyVector);
 	}
 
 	public static void mergeSort(int[] vector)
@@ -122,6 +124,14 @@ public class Main
 		MergeSort sorter = new MergeSort();
 		int[] copyVector = new int[vector.length];
 		copyVectorValues(vector, copyVector);
-		Main.sort(sorter, vector);
+		Main.sort(sorter, copyVector);
+	}
+
+	public static void quickSort(int[] vector)
+	{
+		QuickSort sorter = new QuickSort();
+		int[] copyVector = new int[vector.length];
+		copyVectorValues(vector, copyVector);
+		Main.sort(sorter, copyVector);
 	}
 }

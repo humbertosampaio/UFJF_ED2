@@ -21,14 +21,14 @@ public class MergeSort implements ISorter
 		int smaller;
 		int[] orderedVector = new int[end - start + 1];
 		
-		while((i <= half) || (j <= end))
+		while((i <= half || j <= end) && k <= end)
 		{
-			if (i > half)
+			if (i > half && j <= end)
 			{
 				smaller = vector[j];
 				j++;
 			}
-			else if (j > end)
+			else if (j > end && i <= half)
 			{
 				smaller = vector[i];
 				i++;
@@ -50,7 +50,8 @@ public class MergeSort implements ISorter
 			orderedVector[k++] = smaller;
 		}
 		
-		vector = orderedVector;
+		for(i = 0, j = start; i < orderedVector.length; i++, j++)
+			vector[j] = orderedVector[i];
 	}
 	
 	@Override
